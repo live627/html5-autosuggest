@@ -7,6 +7,13 @@
     "type": "git",
     "url": "https://live627@github.com/live627/html5-autosuggest.git"
   },
+  "keywords": [
+    "autosuggest",
+    "html5",
+    "datalist",
+    "jquery",
+    "jquery-plugin"
+  ],
   "author": "live627 <live627@gmail.com>",
   "license": "MIT",
   "bugs": {
