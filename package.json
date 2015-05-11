@@ -29,4 +29,7 @@
     "uglify-js": "^2.4.20",
     "watch": "^0.16.0"
   },
+  "dependencies": {
+    "mkdirp": "^0.5.0",
+  }
 }
