@@ -62,30 +62,6 @@ smc_AutoSuggest.prototype.init = function()
 
 	// Disable autocomplete in any browser by obfuscating the name.
 	this.oTextHandle.name = 'dummy_' + Math.floor(Math.random() * 1000000);
-	this.oTextHandle.autocomplete = 'off';
-
-	this.oTextHandle.instanceRef = this;
-
-	var fOnKeyDown = function (oEvent) {
-		return this.instanceRef.handleKey(oEvent);
-	};
-	is_opera ? this.oTextHandle.onkeypress = fOnKeyDown : this.oTextHandle.onkeydown = fOnKeyDown;
-
-	this.oTextHandle.onkeyup = function (oEvent) {
-		return this.instanceRef.autoSuggestUpdate(oEvent);
-	};
-
-	this.oTextHandle.onchange = function (oEvent) {
-		return this.instanceRef.autoSuggestUpdate(oEvent);
-	};
-
-	this.oTextHandle.onblur = function (oEvent) {
-		return this.instanceRef.autoSuggestHide(oEvent);
-	};
-
-	this.oTextHandle.onfocus = function (oEvent) {
-		return this.instanceRef.autoSuggestUpdate(oEvent);
-	};
 
 	if (this.bItemList)
 	{
