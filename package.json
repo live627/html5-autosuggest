@@ -4,7 +4,7 @@
   "description": "Simple autosuggest plugin using the new tag introdued in HTML5 <datalist>",
   "main": "src/html5-autosuggest.js",
   "scripts": {
-    "build": "mkdirp build && uglifyjs src/html5-autosuggest.js > build/html5-autosuggest.min.js",
+    "build": "mkdirp build && uglifyjs src/html5-autosuggest.js node_modules/extend/index.js > build/html5-autosuggest.min.js",
     "watch": "watch \"npm run build\" src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
