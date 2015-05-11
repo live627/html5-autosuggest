@@ -1,0 +1,16 @@
+{
+  "name": "html5-autosuggest",
+  "version": "0.1.0",
+  "description": "Simple autosuggest plugin using the new tag introdued in HTML5 <datalist>",
+  "main": "src/html5-autosuggest.js",
+  "repository": {
+    "type": "git",
+    "url": "https://live627@github.com/live627/html5-autosuggest.git"
+  },
+  "author": "live627 <live627@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/live627/html5-autosuggest/issues"
+  },
+  "homepage": "https://github.com/live627/html5-autosuggest",
+}
