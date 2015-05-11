@@ -1,4 +1,4 @@
-function smc_AutoSuggest(oOptions)
+function AutoSuggest(oOptions)
 {
 	this.opt = oOptions;
 
@@ -19,7 +19,7 @@ function smc_AutoSuggest(oOptions)
 	addLoadEvent(this.opt.sSelf + '.init();');
 }
 
-smc_AutoSuggest.prototype.init = function()
+AutoSuggest.prototype.init = function()
 {
 	// Create a backup text input.
 	this.oRealTextHandle = document.createElement('input');
@@ -107,7 +107,7 @@ smc_AutoSuggest.prototype.init = function()
 	return true;
 }
 
-smc_AutoSuggest.prototype.registerCallback = function(sCallbackType, sCallback)
+AutoSuggest.prototype.registerCallback = function(sCallbackType, sCallback)
 {
 	switch (sCallbackType)
 	{
@@ -129,7 +129,7 @@ smc_AutoSuggest.prototype.registerCallback = function(sCallbackType, sCallback)
 	}
 }
 
-smc_AutoSuggest.prototype.addItemLink = function (sItemId, sItemName, bFromSubmit)
+AutoSuggest.prototype.addItemLink = function (sItemId, sItemName, bFromSubmit)
 {
 	if (document.getElementById('suggest_' + this.opt.sSuggestId + '_' + sItemId))
 		return;
@@ -150,7 +150,7 @@ smc_AutoSuggest.prototype.addItemLink = function (sItemId, sItemName, bFromSubmi
 		eval(this.oCallback.onAfterAddItem + '(' + this.opt.sSelf + ', \'' + oNewDiv.id + '\', ' + this.iItemCount + ');');
 }
 
-smc_AutoSuggest.prototype.deleteAddedItem = function (sItemId)
+AutoSuggest.prototype.deleteAddedItem = function (sItemId)
 {
 	var oDiv = document.getElementById('suggest_' + this.opt.sSuggestId + '_' + sItemId);
 
