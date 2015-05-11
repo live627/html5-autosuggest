@@ -129,53 +129,35 @@ smc_AutoSuggest.prototype.registerCallback = function(sCallbackType, sCallback)
 	}
 }
 
-// Add a result if not already done.
 smc_AutoSuggest.prototype.addItemLink = function (sItemId, sItemName, bFromSubmit)
 {
-	// Increase the internal item count.
-	this.iItemCount ++;
+	if (document.getElementById('suggest_' + this.opt.sSuggestId + '_' + sItemId))
+		return;
 
-	// If there's a callback then call it.
 	if ('oCallback' in this && 'onBeforeAddItem' in this.oCallback && typeof(this.oCallback.onBeforeAddItem) == 'string')
 	{
-		// If it returns false the item must not be added.
 		if (!eval(this.oCallback.onBeforeAddItem + '(' + this.opt.sSelf + ', \'' + sItemId + '\');'))
 			return;
 	}
 
 	var oNewDiv = document.createElement('div');
 	oNewDiv.id = 'suggest_' + this.opt.sSuggestId + '_' + sItemId;
+	oNewDiv.className = 'row';
 	setInnerHTML(oNewDiv, this.sItemTemplate.replace(/%post_name%/g, this.opt.sPostName).replace(/%item_id%/g, sItemId).replace(/%item_href%/g, smf_prepareScriptUrl(smf_scripturl) + this.opt.sURLMask.replace(/%item_id%/g, sItemId)).replace(/%item_name%/g, sItemName).replace(/%images_url%/g, smf_images_url).replace(/%self%/g, this.opt.sSelf).replace(/%delete_text%/g, this.sTextDeleteItem));
 	this.oItemList.appendChild(oNewDiv);
 
-	// If there's a registered callback, call it.
 	if ('oCallback' in this && 'onAfterAddItem' in this.oCallback && typeof(this.oCallback.onAfterAddItem) == 'string')
 		eval(this.oCallback.onAfterAddItem + '(' + this.opt.sSelf + ', \'' + oNewDiv.id + '\', ' + this.iItemCount + ');');
-
-	// Clear the div a bit.
-	this.removeLastSearchString();
-
-	// If we came from a submit, and there's still more to go, turn on auto add for all the other things.
-	this.bDoAutoAdd = this.oTextHandle.value != '' && bFromSubmit;
-
-	// Update the fellow..
-	this.autoSuggestUpdate();
 }
 
-// Delete an item that has been added, if at all?
 smc_AutoSuggest.prototype.deleteAddedItem = function (sItemId)
 {
 	var oDiv = document.getElementById('suggest_' + this.opt.sSuggestId + '_' + sItemId);
 
-	// Remove the div if it exists.
 	if (typeof(oDiv) == 'object' && oDiv != null)
 	{
 		oDiv.parentNode.removeChild(document.getElementById('suggest_' + this.opt.sSuggestId + '_' + sItemId));
 
-		// Decrease the internal item count.
-		this.iItemCount --;
-
-		// If there's a registered callback, call it.
 		if ('oCallback' in this && 'onAfterDeleteItem' in this.oCallback && typeof(this.oCallback.onAfterDeleteItem) == 'string')
 			eval(this.oCallback.onAfterDeleteItem + '(' + this.opt.sSelf + ', ' + this.iItemCount + ');');
 	}
