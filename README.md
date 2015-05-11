@@ -1,2 +1,5 @@
 # html5-autosuggest
-Simple autosuggest plugin using the new tag introduced in HTML5 `&lt;datalist>`.
+[![GitHub issues](https://img.shields.io/github/issues/live627/html5-autosuggest.svg)]
+[![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
+
+Simple autosuggest plugin using the new tag introduced in HTML5 `<datalist>`.
