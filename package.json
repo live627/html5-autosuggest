@@ -20,4 +20,8 @@
     "url": "https://github.com/live627/html5-autosuggest/issues"
   },
   "homepage": "https://github.com/live627/html5-autosuggest",
+  "devDependencies": {
+    "uglify-js": "^2.4.20",
+    "watch": "^0.16.0"
+  },
 }
