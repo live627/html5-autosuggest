@@ -1,58 +1,26 @@
-// This file contains javascript associated with a autosuggest control
 function smc_AutoSuggest(oOptions)
 {
 	this.opt = oOptions;
 
-	// Store the handle to the text box.
 	this.oTextHandle = document.getElementById(this.opt.sControlId);
 	this.oRealTextHandle = null;
-
 	this.oSuggestDivHandle = null;
-	this.sLastSearch = '';
-	this.sLastDirtySearch = '';
-	this.oSelectedDiv = null;
+	this.aSuggestIdCache = [];
 	this.aCache = [];
-	this.aDisplayData = [];
-
 	this.sRetrieveURL = 'sRetrieveURL' in this.opt ? this.opt.sRetrieveURL : '%scripturl%action=suggest;suggest_type=%suggest_type%;search=%search%;%sessionVar%=%sessionID%;xml;time=%time%';
-
-	// How many objects can we show at once?
 	this.iMaxDisplayQuantity = 'iMaxDisplayQuantity' in this.opt ? this.opt.iMaxDisplayQuantity : 15;
-
-	// How many characters shall we start searching on?
 	this.iMinimumSearchChars = 'iMinimumSearchChars' in this.opt ? this.opt.iMinimumSearchChars : 3;
-
-	// Should selected items be added to a list?
 	this.bItemList = 'bItemList' in this.opt ? this.opt.bItemList : false;
-
-	// Are there any items that should be added in advance?
 	this.aListItems = 'aListItems' in this.opt ? this.opt.aListItems : [];
-
-	this.sItemTemplate = 'sItemTemplate' in this.opt ? this.opt.sItemTemplate : '<input type="hidden" name="%post_name%[]" value="%item_id%"><a href="%item_href%" class="extern" onclick="window.open(this.href, \'_blank\'); return false;">%item_name%</a>&nbsp;<span class="generic_icons delete" title="%delete_text%" onclick="return %self%.deleteAddedItem(%item_id%);"></span>';
-
+	this.sItemTemplate = 'sItemTemplate' in this.opt ? this.opt.sItemTemplate : '<input type="hidden" name="%post_name%[]" value="%item_id%"><a href="%item_href%" class="col-xs-9 list-group-item" onclick="window.open(this.href, \'_blank\'); return false;">%item_name%</a><a href="#" class="generic_icons delete col-xs-2 list-group-item" title="%delete_text%" onclick="return %self%.deleteAddedItem(%item_id%);"></a>';
 	this.sTextDeleteItem = 'sTextDeleteItem' in this.opt ? this.opt.sTextDeleteItem : '';
-
 	this.oCallback = {};
-	this.bDoAutoAdd = false;
-	this.iItemCount = 0;
 
-	this.oHideTimer = null;
-	this.bPositionComplete = false;
-
-	// Just make sure the page is loaded before calling the init.
 	addLoadEvent(this.opt.sSelf + '.init();');
 }
 
 smc_AutoSuggest.prototype.init = function()
 {
-	if (!window.XMLHttpRequest)
-		return false;
-
-	// Create a div that'll contain the results later on.
-	this.oSuggestDivHandle = document.createElement('div');
-	this.oSuggestDivHandle.className = 'auto_suggest_div';
-	document.body.appendChild(this.oSuggestDivHandle);
-
 	// Create a backup text input.
 	this.oRealTextHandle = document.createElement('input');
 	this.oRealTextHandle.type = 'hidden';
