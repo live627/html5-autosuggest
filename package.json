@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "Simple autosuggest plugin using the new tag introdued in HTML5 <datalist>",
   "main": "src/html5-autosuggest.js",
+  "scripts": {
+    "build": "mkdirp build && uglifyjs src/html5-autosuggest.js > build/html5-autosuggest.min.js",
+    "watch": "watch \"npm run build\" src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "https://live627@github.com/live627/html5-autosuggest.git"
