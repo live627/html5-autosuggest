@@ -96,115 +96,73 @@ smc_AutoSuggest.prototype.init = function()
 			this.oItemList = document.createElement('div');
 			this.oTextHandle.parentNode.insertBefore(this.oItemList, this.oTextHandle.nextSibling);
 		}
+		this.oItemList.className = 'list-group';
 	}
 
 	if (this.aListItems.length > 0)
 		for (var i = 0, n = this.aListItems.length; i < n; i++)
 			this.addItemLink(this.aListItems[i].sItemId, this.aListItems[i].sItemName);
 
-	return true;
-}
+	var self = this;
+	var dataList = $("<datalist>").insertAfter("#" + this.opt.sControlId);
 
-// Was it an enter key - if so assume they are trying to select something.
-smc_AutoSuggest.prototype.handleKey = function(oEvent)
-{
-	// Grab the event object, one way or the other
-	if (!oEvent)
-		oEvent = window.event;
+	$("#" + this.opt.sControlId).on("input", function(e) {
+		var
+			that = $(this),
+			val = that.val();
 
-	// Get the keycode of the key that was pressed.
-	var iKeyPress = 0;
-	if ('keyCode' in oEvent)
-		iKeyPress = oEvent.keyCode;
-	else if ('which' in oEvent)
-		iKeyPress = oEvent.which;
-
-	switch (iKeyPress)
-	{
-		// Tab.
-		case 9:
-			if (this.aDisplayData.length > 0)
+		if (self.aCache[val])
+		{
+			if ('onBeforeUpdate' in self.oCallback && typeof(self.oCallback.onBeforeUpdate) == 'string')
 			{
-				if (this.oSelectedDiv != null)
-					this.itemClicked(this.oSelectedDiv);
-				else
-					this.handleSubmit();
+				if (!eval(self.oCallback.onBeforeUpdate + '(' + self.opt.sSelf + ');'))
+					return false;
 			}
+			dataList.empty();
+			$(self.aCache[val]).each(function (k, v) {
+				$("<option></option>").attr("value", k).html(v).appendTo(dataList);
+			});
+			that.val('');
+			return;
+		}
 
-			// Continue to the next control.
-			return true;
-		break;
+		var sSearchString = self.oTextHandle.value.replace(/^("[^"]+",[ ]*)+/, '').replace(/^([^,]+,[ ]*)+/, '');
+		sSearchString = sSearchString.php_to8bit().php_urlencode();
+		var url = self.sRetrieveURL.replace(/%scripturl%/g, smf_prepareScriptUrl(smf_scripturl)).replace(/%suggest_type%/g, self.opt.sSearchType).replace(/%search%/g, sSearchString).replace(/%sessionVar%/g, self.opt.sSessionVar).replace(/%sessionID%/g, self.opt.sSessionId).replace(/%time%/g, new Date().getTime());
 
-		// Enter.
-		case 13:
-			if (this.aDisplayData.length > 0 && this.oSelectedDiv != null)
-			{
-				this.itemClicked(this.oSelectedDiv);
+		if(val === "")
+			return;
 
-				// Do our best to stop it submitting the form!
+		if (self.aSuggestIdCache[val])
+		{
+			self.addItemLink(val, self.aSuggestIdCache[val]);
+			that.val('');
+			self.aSuggestIdCache = [];
+			return;
+		}
+
+		that.attr('list', that.attr('id') + '-list');
+		dataList.attr('id', that.attr('id') + '-list');
+
+		if ('onBeforeUpdate' in self.oCallback && typeof(self.oCallback.onBeforeUpdate) == 'string')
+		{
+			if (!eval(self.oCallback.onBeforeUpdate + '(' + self.opt.sSelf + ');'))
 				return false;
-			}
-			else
-				return true;
+		}
 
-		break;
+		$.get(url, function(XMLDoc) {
+			dataList.empty();
+			$('item', XMLDoc).each(function (i) {
+				self.aSuggestIdCache[$(this).attr('id')] = $(this).text();
+				$("<option></option>").attr("value", $(this).attr('id')).html($(this).text()).appendTo(dataList);
+				self.aCache[val] = self.aSuggestIdCache;
+			});
+		},"xml");
+	});
 
-		// Up/Down arrow?
-		case 38:
-		case 40:
-			if (this.aDisplayData.length && this.oSuggestDivHandle.style.visibility != 'hidden')
-			{
-				// Loop through the display data trying to find our entry.
-				var bPrevHandle = false;
-				var oToHighlight = null;
-				for (var i = 0; i < this.aDisplayData.length; i++)
-				{
-					// If we're going up and yet the top one was already selected don't go around.
-					if (this.oSelectedDiv != null && this.oSelectedDiv == this.aDisplayData[i] && i == 0 && iKeyPress == 38)
-					{
-						oToHighlight = this.oSelectedDiv;
-						break;
-					}
-					// If nothing is selected and we are going down then we select the first one.
-					if (this.oSelectedDiv == null && iKeyPress == 40)
-					{
-						oToHighlight = this.aDisplayData[i];
-						break;
-					}
-
-					// If the previous handle was the actual previously selected one and we're hitting down then this is the one we want.
-					if (bPrevHandle != false && bPrevHandle == this.oSelectedDiv && iKeyPress == 40)
-					{
-						oToHighlight = this.aDisplayData[i];
-						break;
-					}
-					// If we're going up and this is the previously selected one then we want the one before, if there was one.
-					if (bPrevHandle != false && this.aDisplayData[i] == this.oSelectedDiv && iKeyPress == 38)
-					{
-						oToHighlight = bPrevHandle;
-						break;
-					}
-					// Make the previous handle this!
-					bPrevHandle = this.aDisplayData[i];
-				}
-
-				// If we don't have one to highlight by now then it must be the last one that we're after.
-				if (oToHighlight == null)
-					oToHighlight = bPrevHandle;
-
-				// Remove any old highlighting.
-				if (this.oSelectedDiv != null)
-					this.itemMouseOut(this.oSelectedDiv);
-				// Mark what the selected div now is.
-				this.oSelectedDiv = oToHighlight;
-				this.itemMouseOver(this.oSelectedDiv);
-			}
-		break;
-	}
 	return true;
 }
 
-// Functions for integration.
 smc_AutoSuggest.prototype.registerCallback = function(sCallbackType, sCallback)
 {
 	switch (sCallbackType)
